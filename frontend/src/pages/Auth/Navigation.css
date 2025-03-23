@@ -1,0 +1,75 @@
+/* Container điều hướng - ban đầu chiếm 4% chiều rộng và sẽ mở rộng khi di chuột qua */
+#navigation-container {
+  width: 4%;
+  transition: width 0.3s ease-in-out;
+  overflow: hidden; /* Ẩn nội dung tràn ra ngoài trong quá trình chuyển đổi */
+}
+
+/* Khi di chuột qua, container mở rộng đến 15% chiều rộng */
+#navigation-container:hover {
+  width: 15%;
+}
+
+/* Ban đầu ẩn tên của các mục điều hướng */
+.nav-item-name {
+  display: none;
+  transition: opacity 0.2s ease-in-out; /* Thêm hiệu ứng mờ dần khi xuất hiện/biến mất */
+}
+
+/* Hiển thị tên mục điều hướng khi di chuột qua container */
+#navigation-container:hover .nav-item-name {
+  display: block;
+  opacity: 1;
+}
+
+/* Ban đầu ẩn ô tìm kiếm */
+.search-input {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out; /* Thêm hiệu ứng mờ dần khi xuất hiện/biến mất */
+}
+
+/* Hiển thị ô tìm kiếm khi di chuột qua container */
+#navigation-container:hover .search-input {
+  display: block;
+  opacity: 1;
+}
+
+/* Ẩn biểu tượng tìm kiếm khi di chuột qua container */
+#navigation-container:hover .search-icon {
+  display: none;
+  transition: opacity 0.2s ease-in-out; /* Thêm hiệu ứng mờ dần khi biến mất */
+}
+
+.contact-buttons {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  z-index: 10000;
+}
+
+.contact-button {
+  display: flex;
+  align-items: center;
+  background-color: rgb(21, 184, 239);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: bold;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.contact-button:hover {
+  background-color: rgb(33, 186, 48);
+}
+
+.contact-button img {
+  width: 30px;
+  height: 30px;
+}

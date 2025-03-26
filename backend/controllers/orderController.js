@@ -189,6 +189,14 @@ const markOrderAsPaid = async (req, res) => {
         email_address: req.body.payer.email_address,
       };
 
+      // Thêm người dùng vào danh sách purchasedBy của từng sản phẩm
+      for (const item of order.orderItems) {
+        await Product.findByIdAndUpdate(
+          item.product,
+          { $addToSet: { purchasedBy: order.user } }
+        );
+      }
+
       const updateOrder = await order.save();
       res.status(200).json(updateOrder);
     } else {

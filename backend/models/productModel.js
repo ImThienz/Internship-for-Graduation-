@@ -28,6 +28,7 @@ const productSchema = mongoose.Schema(
     numReviews: { type: Number, required: true, default: 0 }, // Số lượng đánh giá
     price: { type: Number, required: true, default: 0 }, // Giá sản phẩm
     countInStock: { type: Number, required: true, default: 0 }, // Số lượng sản phẩm còn trong kho
+    purchasedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Danh sách người dùng đã mua sản phẩm
   },
   { timestamps: true }
 );

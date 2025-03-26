@@ -60,50 +60,57 @@ const ProductTabs = ({
         {activeTab === 1 && (
           <div className="mt-4">
             {userInfo ? (
-              <form onSubmit={submitHandler}>
-                <div className="my-2">
-                  <label htmlFor="rating" className="block text-xl mb-2">
-                    Đánh giá
-                  </label>
+              product.purchasedBy?.includes(userInfo._id) ? (
+                <form onSubmit={submitHandler}>
+                  <div className="my-2">
+                    <label htmlFor="rating" className="block text-xl mb-2">
+                      Đánh giá
+                    </label>
 
-                  <select
-                    id="rating"
-                    required
-                    value={rating}
-                    onChange={(e) => setRating(e.target.value)}
-                    className="p-2 border rounded-lg xl:w-[40rem] text-black"
+                    <select
+                      id="rating"
+                      required
+                      value={rating}
+                      onChange={(e) => setRating(e.target.value)}
+                      className="p-2 border rounded-lg xl:w-[40rem] text-black"
+                    >
+                      <option value="">Chọn</option>
+                      <option value="1">Kém</option>
+                      <option value="2">Chấp nhận được</option>
+                      <option value="3">Tốt</option>
+                      <option value="4">Xuất sắc</option>
+                      <option value="5">Tuyệt vời</option>
+                    </select>
+                  </div>
+
+                  <div className="my-2">
+                    <label htmlFor="comment" className="block text-xl mb-2">
+                      Bình luận
+                    </label>
+
+                    <textarea
+                      id="comment"
+                      rows="3"
+                      required
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      className="p-2 border rounded-lg xl:w-[40rem] text-black"
+                    ></textarea>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={loadingProductReview}
+                    className="bg-pink-600 text-white py-2 px-4 rounded-lg"
                   >
-                    <option value="">Chọn</option>
-                    <option value="1">Kém</option>
-                    <option value="2">Chấp nhận được</option>
-                    <option value="3">Tốt</option>
-                    <option value="4">Xuất sắc</option>
-                    <option value="5">Tuyệt vời</option>
-                  </select>
+                    Gửi
+                  </button>
+                </form>
+              ) : (
+                <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg">
+                  <p className="font-medium">Bạn cần mua sản phẩm này trước khi đánh giá.</p>
+                  <p className="text-sm mt-1">Vui lòng thêm sản phẩm vào giỏ hàng và hoàn tất đơn hàng.</p>
                 </div>
-
-                <div className="my-2">
-                  <label htmlFor="comment" className="block text-xl mb-2">
-                    Bình luận
-                  </label>
-
-                  <textarea
-                    id="comment"
-                    rows="3"
-                    required
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    className="p-2 border rounded-lg xl:w-[40rem] text-black"
-                  ></textarea>
-                </div>
-                <button
-                  type="submit"
-                  disabled={loadingProductReview}
-                  className="bg-pink-600 text-white py-2 px-4 rounded-lg"
-                >
-                  Gửi
-                </button>
-              </form>
+              )
             ) : (
               <p>
                 Vui lòng <Link to="/login">đăng nhập</Link> để viết đánh giá

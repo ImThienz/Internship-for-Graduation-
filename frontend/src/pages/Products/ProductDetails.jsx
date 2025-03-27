@@ -15,8 +15,6 @@ import {
   FaStar,
   FaStore,
   FaAngleLeft,
-  FaRegHeart,
-  FaHeart,
   FaFire,
   FaShippingFast,
 } from "react-icons/fa";
@@ -24,6 +22,7 @@ import moment from "moment";
 import Ratings from "./Ratings";
 import ProductTabs from "./ProductTabs";
 import { addToCart } from "../../redux/features/cart/cartSlice";
+import HeartIcon from "./HeartIcon";
 
 const ProductDetails = () => {
   const { id: productId } = useParams();
@@ -142,50 +141,6 @@ const ProductDetails = () => {
 
   const handleMouseLeave = () => {
     setCursorVariant("default");
-  };
-
-  // Custom HeartIcon component với hiệu ứng
-  const HeartIcon = ({ product }) => {
-    const [isFavorite, setIsFavorite] = useState(false);
-    const [isAnimating, setIsAnimating] = useState(false);
-    const [showRipple, setShowRipple] = useState(false);
-
-    const toggleFavorite = () => {
-      setIsFavorite(!isFavorite);
-      setIsAnimating(true);
-      setShowRipple(true);
-
-      setTimeout(() => setIsAnimating(false), 500);
-      setTimeout(() => setShowRipple(false), 800);
-      // Thêm logic yêu thích thực tế ở đây nếu cần
-    };
-
-    return (
-      <div className="absolute top-4 right-4 z-10">
-        <div
-          className={`relative text-2xl cursor-pointer transition-transform duration-300 ${
-            isAnimating ? "scale-125" : ""
-          }`}
-          onClick={toggleFavorite}
-          onMouseEnter={() => handleMouseEnter("heart")}
-          onMouseLeave={handleMouseLeave}
-        >
-          {isFavorite ? (
-            <FaHeart className="text-red-500 filter drop-shadow-lg" />
-          ) : (
-            <FaRegHeart className="text-gray-300 hover:text-red-500 transition-colors duration-300" />
-          )}
-
-          {/* Hiệu ứng sóng tỏa ra khi click */}
-          {showRipple && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="absolute w-8 h-8 bg-red-500/50 rounded-full animate-ping"></div>
-              <div className="absolute w-12 h-12 bg-red-500/30 rounded-full animate-ping animation-delay-300"></div>
-            </div>
-          )}
-        </div>
-      </div>
-    );
   };
 
   // Custom Cursor

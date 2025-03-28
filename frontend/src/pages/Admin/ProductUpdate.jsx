@@ -263,6 +263,7 @@ const AdminProductUpdate = () => {
                     onChange={handleChange}
                     required
                     min="0"
+                    step="0.01"
                     className="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 focus:border-pink-500 focus:ring focus:ring-pink-500 focus:ring-opacity-50 transition-all outline-none"
                     placeholder="Nhập giá sản phẩm"
                   />

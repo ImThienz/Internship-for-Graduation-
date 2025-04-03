@@ -245,9 +245,9 @@ const Shop = () => {
               {activeTab === "price" && (
                 <div className="space-y-4 min-w-64">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600 text-sm">0₫</span>
+                    <span className="text-gray-600 text-sm">$0</span>
                     <span className="text-gray-600 text-sm">
-                      {priceRange[1].toLocaleString()}₫
+                      ${priceRange[1].toLocaleString()}
                     </span>
                   </div>
                   <input
@@ -263,7 +263,7 @@ const Shop = () => {
                       Khoảng Giá
                     </p>
                     <p className="text-gray-800 font-bold">
-                      0₫ - {priceRange[1].toLocaleString()}₫
+                      $0 - ${priceRange[1].toLocaleString()}
                     </p>
                   </div>
                 </div>

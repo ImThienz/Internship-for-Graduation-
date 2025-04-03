@@ -1,7 +1,11 @@
 import { useSelector } from "react-redux";
+import { useGetFavoritesQuery } from "../../redux/api/usersApiSlice";
 
 const FavoritesCount = () => {
-  const favorites = useSelector((state) => state.favorites);
+  const { userInfo } = useSelector((state) => state.auth);
+  const { data: favorites = [] } = useGetFavoritesQuery(undefined, {
+    skip: !userInfo,
+  });
   const favoriteCount = favorites.length;
 
   return (

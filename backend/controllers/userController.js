@@ -233,6 +233,84 @@ const updateUserById = asyncHandler(async (req, res) => {
   });
 });
 
+// Thêm sản phẩm vào favorites
+const addToFavorites = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  const productId = req.body.productId;
+
+  if (!user) {
+    res.status(404);
+    throw new Error("Không tìm thấy người dùng");
+  }
+
+  // Thiếu kiểm tra productId có tồn tại không
+  if (!productId) {
+    res.status(400);
+    throw new Error("Không tìm thấy ID sản phẩm");
+  }
+
+  // Kiểm tra xem sản phẩm đã có trong favorites chưa
+  if (user.favorites.includes(productId)) {
+    res.status(400);
+    throw new Error("Sản phẩm đã có trong danh sách yêu thích");
+  }
+
+  user.favorites.push(productId);
+  await user.save();
+
+  res.status(200).json(user.favorites);
+});
+
+// Xóa sản phẩm khỏi favorites
+const removeFromFavorites = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  const productId = req.params.productId;
+
+  if (!user) {
+    res.status(404);
+    throw new Error("Không tìm thấy người dùng");
+  }
+
+  user.favorites = user.favorites.filter(id => id.toString() !== productId);
+  await user.save();
+
+  res.status(200).json(user.favorites);
+});
+
+// Lấy danh sách favorites của user
+const getFavorites = asyncHandler(async (req, res) => {
+  try {
+    // Kiểm tra xem user có tồn tại không
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: "Không tìm thấy thông tin người dùng" });
+    }
+
+    // Tìm user và populate favorites
+    const user = await User.findById(req.user._id).populate({
+      path: 'favorites',
+      model: 'Product', // Đảm bảo tên model là chính xác
+      select: '_id name price image' // Chỉ lấy các trường cần thiết
+    });
+    
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    // Kiểm tra xem favorites có tồn tại không
+    if (!user.favorites) {
+      return res.status(200).json([]);
+    }
+
+    return res.status(200).json(user.favorites);
+  } catch (error) {
+    console.error('Error in getFavorites:', error);
+    return res.status(500).json({ 
+      message: "Lỗi khi lấy danh sách yêu thích",
+      error: error.message 
+    });
+  }
+});
+
 export {
   createUser,
   loginUser,
@@ -243,4 +321,7 @@ export {
   deleteUser,
   getUserById,
   updateUserById,
+  addToFavorites,
+  removeFromFavorites,
+  getFavorites,
 };

@@ -9,6 +9,9 @@ import {
   deleteUser,
   getUserById,
   updateUserById,
+  getFavorites,
+  addToFavorites,
+  removeFromFavorites,
 } from "../controllers/userController.js";
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
 
@@ -41,6 +44,14 @@ router
   .route("/profile")
   .get(authenticate, getCurrentUserProfile)
   .put(authenticate, editProfile);
+
+  
+router.route('/favorites')
+.get(authenticate, getFavorites)
+.post(authenticate, addToFavorites);
+
+router.route('/favorites/:productId')
+  .delete(authenticate, removeFromFavorites);
 
 /**
  *   DELETE /api/users/:id - Xóa người dùng theo ID (Admin only)

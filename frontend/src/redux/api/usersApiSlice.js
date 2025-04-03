@@ -72,6 +72,33 @@ export const userApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["User"], // Invalidate cache để cập nhật lại dữ liệu
     }),
+
+    // Lấy danh sách favorites của người dùng
+    getFavorites: builder.query({
+      query: () => ({
+        url: `${USERS_URL}/favorites`,
+      }),
+      providesTags: ['Favorites'],
+    }),
+
+    // Thêm sản phẩm vào favorites của người dùng
+    addToFavorites: builder.mutation({
+      query: (productId) => ({
+        url: `${USERS_URL}/favorites`,
+        method: 'POST',
+        body: { productId },
+      }),
+      invalidatesTags: ['Favorites'],
+    }),
+
+    // Xóa sản phẩm khỏi favorites của người dùng
+    removeFromFavorites: builder.mutation({
+      query: (productId) => ({
+        url: `${USERS_URL}/favorites/${productId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Favorites'],
+    }),
   }),
 });
 
@@ -84,4 +111,7 @@ export const {
   useDeleteUserMutation,
   useUpdateUserMutation,
   useGetUserDetailsQuery,
+  useGetFavoritesQuery,
+  useAddToFavoritesMutation,
+  useRemoveFromFavoritesMutation,
 } = userApiSlice;

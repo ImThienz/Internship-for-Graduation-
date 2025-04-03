@@ -1,9 +1,22 @@
+import { useGetFavoritesQuery } from "../../redux/api/usersApiSlice";
 import { useSelector } from "react-redux";
-import { selectFavoriteProduct } from "../../redux/features/favorites/favoriteSlice";
+import { Link, useNavigate } from "react-router-dom";
 import Product from "./Product";
+import Loader from "../../components/Loader";
 
 const Favorites = () => {
-  const favorites = useSelector(selectFavoriteProduct);
+  const { userInfo } = useSelector((state) => state.auth);
+  const { data: favorites = [], isLoading } = useGetFavoritesQuery(undefined, {
+    skip: !userInfo,
+  });
+  const navigate = useNavigate();
+
+  if (!userInfo) {
+    navigate("/login");
+    return null;
+  }
+
+  if (isLoading) return <Loader />;
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -12,9 +25,17 @@ const Favorites = () => {
       </h1>
 
       {favorites.length === 0 ? (
-        <p className="text-center text-gray-500">
-          Bạn chưa có sản phẩm yêu thích nào.
-        </p>
+        <div className="text-center">
+          <p className="text-gray-500 mb-4">
+            Bạn chưa có sản phẩm yêu thích nào.
+          </p>
+          <Link
+            to="/shop"
+            className="inline-block bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 transition-colors"
+          >
+            Tiếp tục mua sắm
+          </Link>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {favorites.map((product) => (

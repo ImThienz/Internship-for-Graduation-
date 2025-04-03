@@ -1,46 +1,49 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
-  addToFavorites,
-  removeFromFavorites,
-  setFavorites,
-} from "../../redux/features/favorites/favoriteSlice";
-
-import {
-  addFavoriteToLocalStorage,
-  getFavoritesFromLocalStorage,
-  removeFavoriteFromLocalStorage,
-} from "../../Utils/localStorage";
+  useAddToFavoritesMutation,
+  useRemoveFromFavoritesMutation,
+  useGetFavoritesQuery,
+} from "../../redux/api/usersApiSlice";
 
 const HeartIcon = ({ product }) => {
-  const dispatch = useDispatch();
-  const favorites = useSelector((state) => state.favorites) || [];
-  const isFavorite = favorites.some((p) => p._id === product._id);
+  const { userInfo } = useSelector((state) => state.auth);
+  const { data: favorites = [] } = useGetFavoritesQuery(undefined, {
+    skip: !userInfo,
+  });
+  const [addToFavorites] = useAddToFavoritesMutation();
+  const [removeFromFavorites] = useRemoveFromFavoritesMutation();
+  const navigate = useNavigate();
   const [animate, setAnimate] = useState(false);
 
-  useEffect(() => {
-    const favoritesFromLocalStorage = getFavoritesFromLocalStorage();
-    dispatch(setFavorites(favoritesFromLocalStorage));
-  }, [dispatch]);
+  const isFavorite = favorites.some((p) => p._id === product._id);
 
-  const toggleFavorites = () => {
+  const toggleFavorite = async () => {
+    if (!userInfo) {
+      navigate("/login");
+      return;
+    }
+
     setAnimate(true);
     setTimeout(() => setAnimate(false), 500);
 
-    if (isFavorite) {
-      dispatch(removeFromFavorites(product));
-      removeFavoriteFromLocalStorage(product._id);
-    } else {
-      dispatch(addToFavorites(product));
-      addFavoriteToLocalStorage(product);
+    try {
+      if (isFavorite) {
+        await removeFromFavorites(product._id).unwrap();
+      } else {
+        await addToFavorites(product._id).unwrap();
+      }
+    } catch (err) {
+      console.error("Failed to toggle favorite:", err);
     }
   };
 
   return (
     <div
       className="absolute top-2 right-5 cursor-pointer transition-transform duration-300 transform hover:scale-125"
-      onClick={toggleFavorites}
+      onClick={toggleFavorite}
     >
       {isFavorite ? (
         <FaHeart

@@ -3,6 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaTrash } from "react-icons/fa";
 import { addToCart, removeFromCart } from "../redux/features/cart/cartSlice";
 import { motion } from "framer-motion";
+import { 
+  useUpdateCartItemQuantityMutation,
+  useRemoveFromCartMutation
+} from "../redux/api/usersApiSlice";
+import { toast } from "react-toastify";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -10,13 +15,41 @@ const Cart = () => {
 
   const cart = useSelector((state) => state.cart);
   const { cartItems } = cart;
+  const { userInfo } = useSelector((state) => state.auth);
 
-  const addToCartHandler = (product, qty) => {
-    dispatch(addToCart({ ...product, qty }));
+  const [updateCartItemQuantity] = useUpdateCartItemQuantityMutation();
+  const [removeFromCartBackend] = useRemoveFromCartMutation();
+
+  const addToCartHandler = async (product, qty) => {
+    if (userInfo) {
+      try {
+        // Nếu đã đăng nhập, sử dụng API backend
+        await updateCartItemQuantity({
+          productId: product._id,
+          qty,
+        }).unwrap();
+      } catch (err) {
+        toast.error(err?.data?.message || "Không thể cập nhật giỏ hàng");
+      }
+    } else {
+      // Nếu chưa đăng nhập, sử dụng redux local
+      dispatch(addToCart({ ...product, qty }));
+    }
   };
 
-  const removeFromCartHandler = (id) => {
-    dispatch(removeFromCart(id));
+  const removeFromCartHandler = async (id) => {
+    if (userInfo) {
+      try {
+        // Nếu đã đăng nhập, sử dụng API backend
+        await removeFromCartBackend(id).unwrap();
+        toast.success("Đã xóa sản phẩm khỏi giỏ hàng");
+      } catch (err) {
+        toast.error(err?.data?.message || "Không thể xóa khỏi giỏ hàng");
+      }
+    } else {
+      // Nếu chưa đăng nhập, sử dụng redux local
+      dispatch(removeFromCart(id));
+    }
   };
 
   const checkoutHandler = () => {

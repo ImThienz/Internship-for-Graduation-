@@ -99,6 +99,52 @@ export const userApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Favorites'],
     }),
+
+    // Lấy giỏ hàng của người dùng
+    getCart: builder.query({
+      query: () => ({
+        url: `${USERS_URL}/cart`,
+      }),
+      providesTags: ['Cart'],
+    }),
+
+    // Thêm sản phẩm vào giỏ hàng
+    addToCart: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/cart`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Cart'],
+    }),
+
+    // Cập nhật số lượng sản phẩm trong giỏ hàng
+    updateCartItemQuantity: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/cart`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Cart'],
+    }),
+
+    // Xóa sản phẩm khỏi giỏ hàng
+    removeFromCart: builder.mutation({
+      query: (productId) => ({
+        url: `${USERS_URL}/cart/${productId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Cart'],
+    }),
+
+    // Xóa toàn bộ giỏ hàng
+    clearCart: builder.mutation({
+      query: () => ({
+        url: `${USERS_URL}/cart`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Cart'],
+    }),
   }),
 });
 
@@ -114,4 +160,9 @@ export const {
   useGetFavoritesQuery,
   useAddToFavoritesMutation,
   useRemoveFromFavoritesMutation,
+  useGetCartQuery,
+  useAddToCartMutation,
+  useUpdateCartItemQuantityMutation,
+  useRemoveFromCartMutation,
+  useClearCartMutation,
 } = userApiSlice;

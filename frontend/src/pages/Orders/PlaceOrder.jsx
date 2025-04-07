@@ -8,6 +8,7 @@ import ProgressSteps from "../../components/ProgressSteps";
 import Loader from "../../components/Loader";
 import { useCreateOrderMutation } from "../../redux/api/orderApiSlice";
 import { clearCartItems } from "../../redux/features/cart/cartSlice";
+import { useClearCartMutation } from "../../redux/api/usersApiSlice";
 
 // Thêm hằng số tỷ giá (đảm bảo giá trị này giống với backend)
 const exchangeRate = 24500;
@@ -26,6 +27,8 @@ const PlaceOrder = () => {
   const cart = useSelector((state) => state.cart);
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
   const dispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.auth);
+  const [clearCartBackend] = useClearCartMutation();
 
   useEffect(() => {
     if (!cart.shippingAddress.address) {
@@ -44,7 +47,15 @@ const PlaceOrder = () => {
         taxPrice: cart.taxPrice,
         totalPrice: cart.totalPrice,
       }).unwrap();
+      
+      // Xóa giỏ hàng sau khi đặt hàng thành công
+      if (userInfo) {
+        // Nếu đã đăng nhập, xóa giỏ hàng từ backend
+        await clearCartBackend().unwrap();
+      }
+      // Luôn xóa giỏ hàng local
       dispatch(clearCartItems());
+      
       navigate(`/order/${res._id}`);
     } catch (error) {
       toast.error(error);

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/features/cart/cartSlice";
+import { useAddToCartMutation } from "../../redux/api/usersApiSlice";
 import { toast } from "react-toastify";
 import HeartIcon from "./HeartIcon";
 import { FiShoppingCart } from "react-icons/fi";
@@ -8,13 +9,30 @@ import { motion } from "framer-motion";
 
 const ProductCard = ({ p }) => {
   const dispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.auth);
+  const [addToCartBackend] = useAddToCartMutation();
 
-  const addToCartHandler = (product, qty) => {
-    dispatch(addToCart({ ...product, qty }));
-    toast.success("Thêm vào giỏ hàng thành công", {
-      position: toast.POSITION.TOP_RIGHT,
-      autoClose: 2000,
-    });
+  const addToCartHandler = async (product, qty) => {
+    if (userInfo) {
+      try {
+        // Nếu đã đăng nhập, sử dụng API backend
+        await addToCartBackend({
+          productId: product._id,
+          name: product.name,
+          image: product.image,
+          price: product.price,
+          countInStock: product.countInStock,
+          qty,
+        }).unwrap();
+        toast.success(`Đã thêm ${product.name} vào giỏ hàng`);
+      } catch (err) {
+        toast.error(err?.data?.message || "Không thể thêm vào giỏ hàng");
+      }
+    } else {
+      // Nếu chưa đăng nhập, sử dụng redux local
+      dispatch(addToCart({ ...product, qty }));
+      toast.success(`Đã thêm ${product.name} vào giỏ hàng`);
+    }
   };
 
   // Truncate product name to 25 characters

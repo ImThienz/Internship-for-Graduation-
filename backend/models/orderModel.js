@@ -104,6 +104,12 @@ const orderSchema = mongoose.Schema(
     deliveredAt: {
       type: Date,
     },
+
+    // Thêm trường voucher vào schema
+    voucher: {
+      code: { type: String },
+      discountAmount: { type: Number, default: 0 },
+    },
   },
   {
     // Tự động thêm timestamp (createdAt và updatedAt)

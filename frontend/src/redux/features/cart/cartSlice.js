@@ -1,6 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 // Import hàm updateCart từ file tiện ích (Utils) để cập nhật giỏ hàng
 import { updateCart } from "../../../Utils/cartUtils";
+import { apiSlice } from "../../api/apiSlice";
+import { userApiSlice } from "../../api/usersApiSlice";
 
 // Khởi tạo trạng thái ban đầu (initialState) từ localStorage nếu có,
 // nếu không sẽ khởi tạo mặc định với giỏ hàng trống, địa chỉ giao hàng trống,
@@ -68,6 +70,40 @@ const cartSlice = createSlice({
 
     // Action: Đặt lại giỏ hàng về trạng thái ban đầu
     resetCart: (state) => (state = initialState),
+
+    // Action: Đồng bộ giỏ hàng từ server vào localStorage
+    syncCartFromServer: (state, action) => {
+      const serverCart = action.payload;
+      if (serverCart && serverCart.length > 0) {
+        state.cartItems = serverCart.map(item => ({
+          _id: item.product._id,
+          name: item.name,
+          image: item.image,
+          price: item.price,
+          countInStock: item.countInStock,
+          qty: item.qty,
+          product: item.product._id,
+        }));
+        return updateCart(state);
+      }
+      return state;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      userApiSlice.endpoints.login.matchFulfilled,
+      (state, action) => {
+        // Khi đăng nhập thành công, chúng ta sẽ lấy giỏ hàng từ server
+        // Việc này sẽ được xử lý bởi syncCartFromServer action trong App.jsx
+      }
+    );
+    builder.addMatcher(
+      userApiSlice.endpoints.logout.matchFulfilled,
+      (state, action) => {
+        // Khi đăng xuất, giữ giỏ hàng từ localStorage
+        return state;
+      }
+    );
   },
 });
 
@@ -78,6 +114,7 @@ export const {
   saveShippingAddress,
   clearCartItems,
   resetCart,
+  syncCartFromServer,
 } = cartSlice.actions;
 
 export default cartSlice.reducer;

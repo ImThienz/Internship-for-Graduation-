@@ -23,6 +23,7 @@ import Ratings from "./Ratings";
 import ProductTabs from "./ProductTabs";
 import { addToCart } from "../../redux/features/cart/cartSlice";
 import HeartIcon from "./HeartIcon";
+import { useAddToCartMutation } from "../../redux/api/usersApiSlice";
 
 const ProductDetails = () => {
   const { id: productId } = useParams();
@@ -39,6 +40,10 @@ const ProductDetails = () => {
   const mainRef = useRef(null);
   const [parallaxItems, setParallaxItems] = useState([]);
   const [scrollY, setScrollY] = useState(0);
+  const [selectedImage, setSelectedImage] = useState("");
+  const [activeTab, setActiveTab] = useState(1);
+  const [hover, setHover] = useState({ cart: false, buy: false });
+  const [addToCartBackend] = useAddToCartMutation();
 
   const {
     data: product,
@@ -128,20 +133,46 @@ const ProductDetails = () => {
     }
   };
 
-  const addToCartHandler = () => {
-    dispatch(addToCart({ ...product, qty }));
-    navigate("/cart");
-    toast.success(`Đã thêm ${product.name} vào giỏ hàng`);
-  };
-
-  // Function để thay đổi dạng con trỏ chuột
-  const handleMouseEnter = (variant) => {
-    setCursorVariant(variant);
+  const handleMouseEnter = (type) => {
+    setHover({ ...hover, [type]: true });
   };
 
   const handleMouseLeave = () => {
-    setCursorVariant("default");
+    setHover({ cart: false, buy: false });
   };
+
+  // Thêm sản phẩm vào giỏ hàng
+  const addToCartHandler = async () => {
+    if (userInfo) {
+      try {
+        // Nếu đã đăng nhập, sử dụng API backend
+        await addToCartBackend({
+          productId: product._id,
+          name: product.name,
+          image: product.image,
+          price: product.price,
+          countInStock: product.countInStock,
+          qty,
+        }).unwrap();
+        toast.success("Sản phẩm đã được thêm vào giỏ hàng");
+      } catch (err) {
+        toast.error(err?.data?.message || "Không thể thêm vào giỏ hàng");
+      }
+    } else {
+      // Nếu chưa đăng nhập, lưu trong localStorage qua redux
+      dispatch(addToCart({ ...product, qty }));
+      toast.success("Sản phẩm đã được thêm vào giỏ hàng");
+    }
+  };
+
+  // Function để thay đổi dạng con trỏ chuột
+  // const handleMouseEnter = (variant) => {
+  //   setCursorVariant(variant);
+  // };
+
+  // const handleMouseLeave = () => {
+  //   setCursorVariant("default");
+  // };
 
   // Custom Cursor
   const CustomCursor = () => {

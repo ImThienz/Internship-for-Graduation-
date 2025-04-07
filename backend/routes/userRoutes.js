@@ -12,6 +12,11 @@ import {
   getFavorites,
   addToFavorites,
   removeFromFavorites,
+  getCart,
+  addToCart,
+  removeFromCart,
+  updateCartItemQuantity,
+  clearCart,
 } from "../controllers/userController.js";
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
 
@@ -52,6 +57,16 @@ router.route('/favorites')
 
 router.route('/favorites/:productId')
   .delete(authenticate, removeFromFavorites);
+
+// Routes cho giỏ hàng
+router.route('/cart')
+  .get(authenticate, getCart)
+  .post(authenticate, addToCart)
+  .put(authenticate, updateCartItemQuantity)
+  .delete(authenticate, clearCart);
+
+router.route('/cart/:productId')
+  .delete(authenticate, removeFromCart);
 
 /**
  *   DELETE /api/users/:id - Xóa người dùng theo ID (Admin only)

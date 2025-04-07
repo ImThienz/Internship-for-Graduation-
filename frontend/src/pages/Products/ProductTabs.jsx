@@ -52,7 +52,7 @@ const ProductTabs = ({
           }`}
           onClick={() => handleTabClick(3)}
         >
-          Sản phẩm liên quan
+          Sản phẩm HOT🔥
         </div>
       </section>
 

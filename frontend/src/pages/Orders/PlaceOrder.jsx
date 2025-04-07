@@ -9,6 +9,18 @@ import Loader from "../../components/Loader";
 import { useCreateOrderMutation } from "../../redux/api/orderApiSlice";
 import { clearCartItems } from "../../redux/features/cart/cartSlice";
 
+// Thêm hằng số tỷ giá (đảm bảo giá trị này giống với backend)
+const exchangeRate = 24500;
+
+// Hàm định dạng tiền tệ
+const formatCurrency = (value, currency) => {
+  if (currency === 'VND') {
+    return `${(value * exchangeRate).toLocaleString('vi-VN')} ₫`;
+  } else {
+    return `$${parseFloat(value).toFixed(2)}`;
+  }
+};
+
 const PlaceOrder = () => {
   const navigate = useNavigate();
   const cart = useSelector((state) => state.cart);
@@ -127,13 +139,17 @@ const PlaceOrder = () => {
                         <div className="mt-1 text-slate-600 dark:text-slate-400">
                           Đơn giá:{" "}
                           <span className="font-medium text-slate-900 dark:text-white">
-                            ${item.price.toFixed(2)}
+                            {cart.paymentMethod === "VNPAY" 
+                              ? formatCurrency(item.price, 'VND')
+                              : formatCurrency(item.price, 'USD')}
                           </span>
                         </div>
                       </div>
                       <div className="mt-4 sm:mt-0 text-right sm:ml-4">
                         <div className="text-lg font-bold">
-                          ${(item.qty * item.price).toFixed(2)}
+                          {cart.paymentMethod === "VNPAY" 
+                            ? formatCurrency(item.qty * item.price, 'VND')
+                            : formatCurrency(item.qty * item.price, 'USD')}
                         </div>
                       </div>
                     </motion.div>
@@ -235,19 +251,25 @@ const PlaceOrder = () => {
                   <div className="flex justify-between text-slate-600 dark:text-slate-400">
                     <span>Tổng tiền sản phẩm</span>
                     <span className="font-medium text-slate-900 dark:text-white">
-                      ${cart.itemsPrice}
+                      {cart.paymentMethod === "VNPAY" 
+                        ? formatCurrency(cart.itemsPrice, 'VND')
+                        : formatCurrency(cart.itemsPrice, 'USD')}
                     </span>
                   </div>
                   <div className="flex justify-between text-slate-600 dark:text-slate-400">
                     <span>Phí vận chuyển</span>
                     <span className="font-medium text-slate-900 dark:text-white">
-                      ${cart.shippingPrice}
+                      {cart.paymentMethod === "VNPAY" 
+                        ? formatCurrency(cart.shippingPrice, 'VND')
+                        : formatCurrency(cart.shippingPrice, 'USD')}
                     </span>
                   </div>
                   <div className="flex justify-between text-slate-600 dark:text-slate-400">
                     <span>Thuế</span>
                     <span className="font-medium text-slate-900 dark:text-white">
-                      ${cart.taxPrice}
+                      {cart.paymentMethod === "VNPAY" 
+                        ? formatCurrency(cart.taxPrice, 'VND')
+                        : formatCurrency(cart.taxPrice, 'USD')}
                     </span>
                   </div>
                   <div className="my-4 border-t border-slate-200 dark:border-slate-700 pt-4">
@@ -256,7 +278,9 @@ const PlaceOrder = () => {
                         Tổng thanh toán
                       </span>
                       <span className="text-lg font-bold">
-                        ${cart.totalPrice}
+                        {cart.paymentMethod === "VNPAY" 
+                          ? formatCurrency(cart.totalPrice, 'VND')
+                          : formatCurrency(cart.totalPrice, 'USD')}
                       </span>
                     </div>
                   </div>

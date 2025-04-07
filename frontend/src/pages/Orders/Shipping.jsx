@@ -177,7 +177,7 @@ const Shipping = () => {
                 Phương Thức Thanh Toán
                 <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-teal-400 to-transparent"></span>
               </h2>
-              <div className="bg-indigo-950/80 p-6 rounded-lg border border-cyan-600/30 shadow-lg transform transition-transform hover:scale-[1.01] duration-300">
+              <div className="bg-indigo-950/80 p-6 rounded-lg border border-cyan-600/30 shadow-lg space-y-4">
                 <label className="flex items-center space-x-4 cursor-pointer">
                   <div className="relative">
                     <input
@@ -207,6 +207,25 @@ const Shipping = () => {
                       <div className="w-12 h-8 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-md flex items-center justify-center shadow-md transform transition-transform hover:scale-105 duration-200">
                         <span className="text-white font-bold text-xs">MC</span>
                       </div>
+                    </div>
+                  </div>
+                </label>
+
+                <label className="flex items-center space-x-4 cursor-pointer">
+                  <div className="relative">
+                    <input
+                      type="radio"
+                      className="form-radio h-6 w-6 text-teal-400 focus:ring-teal-400 border-cyan-700"
+                      name="paymentMethod"
+                      value="VNPAY"
+                      checked={paymentMethod === "VNPAY"}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex items-center">
+                    <span className="text-white mr-4 text-lg">VNPAY</span>
+                    <div className="w-20 h-8 bg-gradient-to-r from-red-500 to-blue-500 rounded-md flex items-center justify-center shadow-md transform transition-transform hover:scale-105 duration-200">
+                      <span className="text-white font-bold text-xs">VNPAY</span>
                     </div>
                   </div>
                 </label>

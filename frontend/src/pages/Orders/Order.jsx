@@ -12,6 +12,7 @@ import {
   useGetPaypalClientIdQuery,
   usePayOrderMutation,
 } from "../../redux/api/orderApiSlice";
+import { useCreateVNPayUrlMutation, useCreateVNPayStaticUrlMutation } from "../../redux/api/paymentApiSlice";
 
 const Order = () => {
   const { id: orderId } = useParams();
@@ -36,6 +37,9 @@ const Order = () => {
     isLoading: loadingPaPal,
     error: errorPayPal,
   } = useGetPaypalClientIdQuery();
+
+  const [createVNPayUrl] = useCreateVNPayUrlMutation();
+  // const [createVNPayStaticUrl] = useCreateVNPayStaticUrlMutation();
 
   useEffect(() => {
     if (!errorPayPal && !loadingPaPal && paypal?.clientId) {
@@ -91,6 +95,26 @@ const Order = () => {
       toast.success("Đơn hàng đã được đánh dấu là đã giao");
     } catch (error) {
       toast.error(error?.data?.message || error.message);
+    }
+  };
+
+  const handleVNPayPayment = async () => {
+    try {
+      // const response = await createVNPayStaticUrl().unwrap();
+      
+      const response = await createVNPayUrl({
+        amount: order.totalPrice,
+        orderId: order._id,
+        orderInfo: `Thanh toán đơn hàng ${order._id}`
+      }).unwrap();
+
+      if (response.code === '00') {
+        window.location.href = response.data;
+      } else {
+        toast.error("Không thể tạo link thanh toán VNPAY");
+      }
+    } catch (error) {
+      toast.error('Lỗi khi tạo URL thanh toán');
     }
   };
 
@@ -284,19 +308,25 @@ const Order = () => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tổng tiền sản phẩm</span>
                   <span className="font-medium">
-                    ${order.itemsPrice.toFixed(2)}
+                    {order.paymentMethod === "VNPAY" 
+                      ? `${(order.itemsPrice * 24500).toLocaleString('vi-VN')} ₫` 
+                      : `$${order.itemsPrice.toFixed(2)}`}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Phí vận chuyển</span>
                   <span className="font-medium">
-                    ${order.shippingPrice.toFixed(2)}
+                    {order.paymentMethod === "VNPAY" 
+                      ? `${(order.shippingPrice * 24500).toLocaleString('vi-VN')} ₫` 
+                      : `$${order.shippingPrice.toFixed(2)}`}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Thuế</span>
                   <span className="font-medium">
-                    ${order.taxPrice.toFixed(2)}
+                    {order.paymentMethod === "VNPAY" 
+                      ? `${(order.taxPrice * 24500).toLocaleString('vi-VN')} ₫` 
+                      : `$${order.taxPrice.toFixed(2)}`}
                   </span>
                 </div>
                 <div className="flex justify-between pt-3 border-t mt-2">
@@ -304,7 +334,9 @@ const Order = () => {
                     Tổng cộng
                   </span>
                   <span className="text-lg font-bold text-pink-600">
-                    ${order.totalPrice.toFixed(2)}
+                    {order.paymentMethod === "VNPAY" 
+                      ? `${(order.totalPrice * 24500).toLocaleString('vi-VN')} ₫` 
+                      : `$${order.totalPrice.toFixed(2)}`}
                   </span>
                 </div>
               </div>
@@ -321,20 +353,34 @@ const Order = () => {
                   Thanh toán
                 </h2>
                 {loadingPay && <Loader />}
-                {isPending ? (
-                  <div className="flex justify-center py-4">
-                    <Loader />
-                    <span className="ml-2 text-gray-600">
-                      Đang tải PayPal...
-                    </span>
-                  </div>
-                ) : (
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <PayPalButtons
-                      createOrder={createOrder}
-                      onApprove={onApprove}
-                      onError={onError}
-                    />
+
+                {order.paymentMethod === "PayPal" && (
+                  <>
+                    {isPending ? (
+                      <div className="flex justify-center py-4">
+                        <Loader />
+                        <span className="ml-2 text-gray-600">Đang tải PayPal...</span>
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <PayPalButtons
+                          createOrder={createOrder}
+                          onApprove={onApprove}
+                          onError={onError}
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {order.paymentMethod === "VNPAY" && (
+                  <div className="mt-4">
+                    <button
+                      onClick={handleVNPayPayment}
+                      className="w-full py-3 px-4 bg-gradient-to-r from-red-500 to-blue-500 text-white font-medium rounded-lg transition-all hover:from-red-600 hover:to-blue-600 transform hover:-translate-y-1 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+                    >
+                      Thanh toán qua VNPAY
+                    </button>
                   </div>
                 )}
               </motion.div>

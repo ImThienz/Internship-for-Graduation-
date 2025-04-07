@@ -5,6 +5,14 @@ const baseQuery = fetchBaseQuery({ baseUrl: BASE_URL, credentials: 'include' });
 
 export const apiSlice = createApi({
   baseQuery,
+  baseUrl: '/api',
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState().auth.userInfo?.token;
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
   tagTypes: ["Product", "Order", "User", "Category"],
   endpoints: () => ({}),
 });

@@ -36,7 +36,7 @@ const ProductTabs = ({
           }`}
           onClick={() => handleTabClick(1)}
         >
-          Viết đánh giá của bạn
+          Tất cả đánh giá
         </div>
         <div
           className={`flex-1 p-4 cursor-pointer text-lg ${
@@ -44,7 +44,7 @@ const ProductTabs = ({
           }`}
           onClick={() => handleTabClick(2)}
         >
-          Tất cả đánh giá
+          Viết đánh giá của bạn
         </div>
         <div
           className={`flex-1 p-4 cursor-pointer text-lg ${
@@ -58,6 +58,34 @@ const ProductTabs = ({
 
       <section>
         {activeTab === 1 && (
+          <>
+            <div>
+              {product.reviews.length === 0 && <p>Chưa có đánh giá nào</p>}
+            </div>
+
+            <div>
+              {product.reviews.map((review) => (
+                <div
+                  key={review._id}
+                  className="bg-[#1A1A1A] p-4 rounded-lg xl:ml-[2rem] sm:ml-[0rem] xl:w-[50rem] sm:w-[24rem] mb-5"
+                >
+                  <div className="flex justify-between">
+                    <strong className="text-[#B0B0B0]">{review.name}</strong>
+                    <p className="text-[#B0B0B0]">
+                      {review.createdAt.substring(0, 10)}
+                    </p>
+                  </div>
+
+                  <p className="my-4">{review.comment}</p>
+                  <Ratings value={review.rating} />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </section>
+      <section>
+        {activeTab === 2 && (
           <div className="mt-4">
             {userInfo ? (
               product.purchasedBy?.includes(userInfo._id) ? (
@@ -117,35 +145,6 @@ const ProductTabs = ({
               </p>
             )}
           </div>
-        )}
-      </section>
-
-      <section>
-        {activeTab === 2 && (
-          <>
-            <div>
-              {product.reviews.length === 0 && <p>Chưa có đánh giá nào</p>}
-            </div>
-
-            <div>
-              {product.reviews.map((review) => (
-                <div
-                  key={review._id}
-                  className="bg-[#1A1A1A] p-4 rounded-lg xl:ml-[2rem] sm:ml-[0rem] xl:w-[50rem] sm:w-[24rem] mb-5"
-                >
-                  <div className="flex justify-between">
-                    <strong className="text-[#B0B0B0]">{review.name}</strong>
-                    <p className="text-[#B0B0B0]">
-                      {review.createdAt.substring(0, 10)}
-                    </p>
-                  </div>
-
-                  <p className="my-4">{review.comment}</p>
-                  <Ratings value={review.rating} />
-                </div>
-              ))}
-            </div>
-          </>
         )}
       </section>
 

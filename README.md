@@ -8,3 +8,9 @@ npm install
 cd ..  
 npm run dev  
 -------------------  
+  
+# FITVAA  
+Member:  
+- Vũ Thành Đạt - 2254810175
+- Nguyễn Văn Sơn - 2254810168
+- Nguyễn Minh Hiếu - 2254810172  
